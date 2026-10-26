@@ -3,12 +3,11 @@ import { View, Text, StyleSheet, ScrollView, Linking, Pressable, Alert } from 'r
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
 import Constants from 'expo-constants';
-import QRCode from 'react-native-qrcode-svg';
 import { Card, Loading } from '@/components/ui';
 import { colors, spacing, typography, radius } from '@/lib/theme';
 import { getSystemSettings } from '@/api/wrappers/settings';
 import { getCurrentVersion } from '@/api/wrappers/version';
-import { Info, Phone, Mail, Globe, MessageCircle } from 'lucide-react-native';
+import { Info, Phone, Mail, Globe } from 'lucide-react-native';
 
 /** 从系统设置中按候选 key 顺序取第一个非空字符串 */
 function pick(settings: Record<string, string>, keys: string[]): string {
@@ -66,12 +65,6 @@ export default function AboutScreen() {
     'app_about',
     'description',
   ]);
-  const groupQr = pick(settings, [
-    'qq_group_qrcode',
-    'group_qrcode',
-    'qq_group',
-    'qrcode',
-  ]);
   const contact = pick(settings, [
     'contact',
     'contact_info',
@@ -117,30 +110,6 @@ export default function AboutScreen() {
               <Text style={[styles.sectionTitle, { color: c.textSecondary }]}>应用介绍</Text>
             </View>
             <Text style={[styles.description, { color: c.text }]}>{description}</Text>
-          </Card>
-        ) : null}
-
-        {/* 群二维码 */}
-        {groupQr ? (
-          <Card style={styles.section}>
-            <View style={styles.sectionTitleRow}>
-              <MessageCircle size={16} stroke={c.textSecondary} />
-              <Text style={[styles.sectionTitle, { color: c.textSecondary }]}>交流群</Text>
-            </View>
-            <View style={styles.qrWrap}>
-              <View style={[styles.qrBox, { backgroundColor: '#FFFFFF' }]}>
-                <QRCode
-                  value={groupQr}
-                  size={180}
-                  color="#1A1A1A"
-                  backgroundColor="#FFFFFF"
-                  quietZone={10}
-                />
-              </View>
-              <Text style={[styles.qrHint, { color: c.textMuted }]}>
-                扫描二维码加入交流群
-              </Text>
-            </View>
           </Card>
         ) : null}
 
@@ -218,9 +187,6 @@ const styles = StyleSheet.create({
   sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   sectionTitle: { ...typography.caption, fontWeight: '600' },
   description: { ...typography.body, lineHeight: 24 },
-  qrWrap: { alignItems: 'center', gap: spacing.sm },
-  qrBox: { padding: 4, borderRadius: radius.md },
-  qrHint: { ...typography.small },
   contactRow: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -12,7 +12,6 @@ from fastapi import APIRouter
 from . import (
     activation,
     admin,
-    advertisements,
     ai,
     ai_listing,
     announcements,
@@ -31,7 +30,6 @@ from . import (
     chat_quick_phrase,
     chat_customer_order,
     payment,
-    popup_announcements,
     confirm_receipt_messages,
     api_cookie_renew_logs,
     cookie_refresh,
@@ -72,7 +70,6 @@ from . import (
     agree_deliver,
     agree_pickup,
     qr_login,
-    qrcode,
     risk_control_logs,
     account_login_logs,
     db_backup_logs,
@@ -157,9 +154,7 @@ api_router.include_router(auto_rate.router, prefix="/auto-rate", tags=["自动�
 api_router.include_router(system_settings.router, prefix="/system-settings", tags=["系统设置"])
 api_router.include_router(system_control.router, tags=["系统管理"])  # 已定义prefix="/system-control"
 api_router.include_router(announcements.router, prefix="/announcements", tags=["公告管理"])
-api_router.include_router(popup_announcements.router, prefix="/popup-announcements", tags=["弹窗公告"])
 api_router.include_router(feedback.router, prefix="/feedbacks", tags=["反馈管理"])
-api_router.include_router(advertisements.router, prefix="/advertisements", tags=["广告管理"])
 api_router.include_router(auto_reply_logs.router, tags=["消息日志"])
 api_router.include_router(account_login_logs.router, tags=["账号登录日志"])
 api_router.include_router(user_login_logs.router, tags=["用户登录日志"])
@@ -180,7 +175,6 @@ api_router.include_router(agree_deliver.router, prefix="/agree-deliver", tags=["
 # 同意后发货提货页（公开接口，无需登录）
 api_router.include_router(agree_pickup.router, prefix="/agree-pickup", tags=["同意后发货提货页"])
 api_router.include_router(upload.router, prefix="/upload", tags=["文件上传"])
-api_router.include_router(qrcode.router, tags=["群二维码"])  # 已定义prefix="/qrcode"
 
 # Cookie和验证
 api_router.include_router(cookie_refresh.router, tags=["Cookie刷新管理"])  # 已定义prefix="/cookie-refresh"

@@ -8,6 +8,12 @@
 
 set -e
 
+if [ -z "${IMAGE_REGISTRY:-}" ]; then
+    echo "此脚本部署预构建镜像。要使用本仓库源码构建，请运行 docker compose up -d --build。" >&2
+    echo "仅在部署自己镜像仓库的镜像时，设置 IMAGE_REGISTRY 后继续使用此脚本。" >&2
+    exit 1
+fi
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -149,14 +155,6 @@ EXTERNAL_API_KEY=zhinian_bk
 FRONTEND_PUBLIC_URL=
 # 启动时是否自动启动 Goofish 定时采集任务
 AUTO_START_CRAWL_JOBS=true
-# 远程官方服务基址（仪表盘广告、系统公告 = 本地内容 + 远程官方内容）
-REMOTE_OFFICIAL_BASE_URL=https://xy.zhinianboke.com
-# 是否启用远程官方广告合并展示（官方服务器自身部署建议设为 false）
-ENABLE_REMOTE_ADS=true
-# 是否启用远程官方公告合并展示（官方服务器自身部署建议设为 false）
-ENABLE_REMOTE_ANNOUNCEMENTS=true
-# 是否启用远程官方弹窗公告合并展示（官方服务器自身部署建议设为 false）
-ENABLE_REMOTE_POPUP_ANNOUNCEMENTS=true
 ENVEOF
     echo -e "${GREEN}✓ 已生成 .env.remote 文件${NC}"
     echo -e "${RED}[重要] 请先编辑 $ENV_FILE 填写远程 MYSQL_HOST / REDIS_HOST 等连接信息，${NC}"
@@ -226,10 +224,6 @@ services:
       - EXTERNAL_API_KEY=${EXTERNAL_API_KEY:-zhinian_bk}
       - FRONTEND_PUBLIC_URL=${FRONTEND_PUBLIC_URL:-}
       - AUTO_START_CRAWL_JOBS=${AUTO_START_CRAWL_JOBS:-true}
-      - REMOTE_OFFICIAL_BASE_URL=${REMOTE_OFFICIAL_BASE_URL:-https://xy.zhinianboke.com}
-      - ENABLE_REMOTE_ADS=${ENABLE_REMOTE_ADS:-true}
-      - ENABLE_REMOTE_ANNOUNCEMENTS=${ENABLE_REMOTE_ANNOUNCEMENTS:-true}
-      - ENABLE_REMOTE_POPUP_ANNOUNCEMENTS=${ENABLE_REMOTE_POPUP_ANNOUNCEMENTS:-true}
       - BROWSER_HEADLESS=true
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - SQL_ECHO=${SQL_ECHO:-false}

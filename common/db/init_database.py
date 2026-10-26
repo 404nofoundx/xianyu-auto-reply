@@ -244,11 +244,6 @@ class DatabaseInitializer:
             "登录页系统描述",
         ),
         (
-            "auth.footer_ad_html",
-            "© 2026 划算云服务器 ·<a href=\"http://www.hsykj.com\" target=\"_BLANK\">www.hsykj.com</a>",
-            "登录页和注册页底部广告 HTML",
-        ),
-        (
             "theme.effect",
             "solid",
             "系统主题效果（solid-纯色，gradient-炫彩）",

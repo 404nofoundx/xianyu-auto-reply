@@ -2,7 +2,7 @@
 # ==========================================
 # 闲鱼自动回复系统 - 本地源码构建并部署脚本
 # 从源码构建Docker镜像，无需从远程仓库拉取
-# 用法: bash build.sh [rebuild|start|stop|restart|logs|status]
+# 用法: bash build.sh [build|rebuild|start|stop|restart|logs|status]
 # ==========================================
 
 set -e
@@ -221,6 +221,9 @@ start_services() {
 CMD="${1:-rebuild}"
 
 case "$CMD" in
+    build)
+        build_images
+        ;;
     rebuild)
         generate_env
         clean_old
@@ -252,8 +255,9 @@ case "$CMD" in
         $DC_CMD ps
         ;;
     *)
-        echo "用法: bash $0 [rebuild|start|stop|restart|logs|status]"
+        echo "用法: bash $0 [build|rebuild|start|stop|restart|logs|status]"
         echo ""
+        echo "  build    - 仅从当前源码构建应用镜像，不停止或启动容器"
         echo "  rebuild  - 删除旧容器和镜像，重新从源码构建并启动（默认）"
         echo "  start    - 启动服务（不重新构建）"
         echo "  stop     - 停止所有服务"

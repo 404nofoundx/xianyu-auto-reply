@@ -6,8 +6,9 @@
 # 基础镜像走 docker.io 官方名（由 buildx 的 buildkitd 镜像加速配置拉取，见流水线 BUILDKIT 配置）
 FROM node:18-alpine AS builder
 
-# 配置国内镜像源
-RUN npm config set registry https://registry.npmmirror.com
+# 锁文件含镜像站地址，构建时统一从 npm 官方仓库下载依赖。
+RUN npm config set registry https://registry.npmjs.org && \
+    npm config set replace-registry-host always
 
 WORKDIR /app
 

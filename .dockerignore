@@ -16,3 +16,6 @@ update.sh
 .env
 .env.*
 docker-compose.yml
+**/node_modules
+**/dist
+**/.venv

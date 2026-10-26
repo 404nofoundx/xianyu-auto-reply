@@ -2,16 +2,13 @@
     agent any
     
     environment {
-        // GitHub 仓库配置（通过国内 GitHub 加速镜像拉取，公开仓库无需凭据）
-        GITHUB_REPO = 'https://github.com/zhinianboke/xianyu-auto-reply.git'
-        // 注：已改为多加速镜像拉取（ghfast.top 等），不再使用 github-token 凭据；
-        //     若仓库为私有需走凭据，请改回 git 步骤并配置 GITHUB_CREDENTIALS
-        GITHUB_CREDENTIALS = 'github-token'
+        // 当前仓库源码，公开仓库可直接克隆。
+        GITHUB_REPO = 'https://github.com/404nofoundx/xianyu-auto-reply.git'
         
         // 阿里云镜像仓库配置
         ALIYUN_REGISTRY = 'registry.cn-shanghai.aliyuncs.com'
-        ALIYUN_NAMESPACE = 'zhinian-software'
-        ALIYUN_CREDENTIALS = 'aliyun-docker-credentials'  // 需要在 Jenkins 中配置
+        ALIYUN_NAMESPACE = 'CHANGE_ME'
+        ALIYUN_CREDENTIALS = 'CHANGE_ME'  // 在 Jenkins 中配置自己的仓库凭据
         
         // 镜像名称 - 4个服务
         FRONTEND_IMAGE_NAME = 'xianyu-frontend'
@@ -24,35 +21,26 @@
     }
     
     stages {
+        stage('检查镜像仓库配置') {
+            steps {
+                script {
+                    if (env.ALIYUN_NAMESPACE == 'CHANGE_ME' || env.ALIYUN_CREDENTIALS == 'CHANGE_ME') {
+                        error('请先配置自己的 ALIYUN_NAMESPACE 和 ALIYUN_CREDENTIALS，再推送镜像')
+                    }
+                }
+            }
+        }
         stage('拉取代码') {
             steps {
                 echo '开始拉取代码...'
 
-                // 多 GitHub 加速镜像优先 + 直连兜底（参照 jenkins/安装Buildx插件.sh、修复DockerCLI.sh）
-                // 加速镜像优先级：ghfast.top → gh-proxy.com → ghproxy.net → mirror.ghproxy.com → github.com 直连
+                // 直接从本仓库拉取，确保镜像使用本仓库提交。
                 sh '''
                     git config --global http.version HTTP/1.1
                     git config --global http.postBuffer 524288000
 
                     rm -rf src_checkout
-                    CLONED=0
-                    for PREFIX in \
-                        "https://ghfast.top/" \
-                        "https://gh-proxy.com/" \
-                        "https://ghproxy.net/" \
-                        "https://mirror.ghproxy.com/" \
-                        ""; do
-                        URL="${PREFIX}${GITHUB_REPO}"
-                        echo "尝试拉取: ${URL}"
-                        if git clone --branch main --depth 1 "${URL}" src_checkout; then
-                            echo "✓ 拉取成功: ${URL}"
-                            CLONED=1
-                            break
-                        fi
-                        echo "✗ 拉取失败，切换下一个加速镜像..."
-                        rm -rf src_checkout
-                    done
-                    [ "${CLONED}" = "1" ] || { echo "所有镜像均拉取失败"; exit 1; }
+                    git clone --branch main --depth 1 "${GITHUB_REPO}" src_checkout
 
                     # 先清理工作区旧内容（含上次遗留的只读 .git pack 文件），避免 cp 覆盖失败
                     find . -mindepth 1 -maxdepth 1 ! -name src_checkout -exec rm -rf {} +

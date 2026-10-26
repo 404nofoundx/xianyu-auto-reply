@@ -2,31 +2,26 @@
  * 公共页面顶部导航栏组件
  *
  * 用于登录页、注册页、获取激活码、激活码续期等无需登录的页面
- * 包含：首页、获取激活码、激活码续期、获取本地版、获取源码、关于
  * 支持手机端响应式（汉堡菜单）
  */
 import { Link, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { Home, Key, RefreshCw, Monitor, Menu, X, MessageSquare, Code2, Sun, Moon, Info } from 'lucide-react'
+import { Home, Key, RefreshCw, Menu, X, MessageSquare, Sun, Moon, Info } from 'lucide-react'
 import { getDefaultLoginBrandingSettings, LOGIN_BRANDING_UPDATED_EVENT } from '@/api/settings'
 import { getLoginBrandingSettings } from '@/api/auth'
 import type { LoginBrandingSettings } from '@/types'
 import { cn } from '@/utils/cn'
 import { initializeThemeMode, toggleThemeMode } from '@/utils/theme'
 
-/** 判断当前是否为线上正式环境 */
-const isOnlineEnv = () => {
-  return window.location.hostname === 'xy.zhinianboke.com'
-}
+/** 激活码入口只在官方服务域名展示。 */
+const isOnlineEnv = () => window.location.hostname === 'xy.zhinianboke.com'
 
 /** 导航菜单项定义 */
 const NAV_ITEMS = [
-  { path: '/login', label: '首页', icon: Home, hideOnLocal: true },
-  { path: '/get-activation', label: '获取激活码', icon: Key, hideOnLocal: true },
-  { path: '/renew-activation', label: '激活码续期', icon: RefreshCw, hideOnLocal: true },
-  { path: '/get-local-version', label: '获取本地版', icon: Monitor, hideOnLocal: true },
-  { path: '/get-source-code', label: '获取源码', icon: Code2, hideOnLocal: true },
-  { path: '/about-public', label: '关于', icon: Info, hideOnLocal: false },
+  { path: '/login', label: '首页', icon: Home, onlineOnly: true },
+  { path: '/get-activation', label: '获取激活码', icon: Key, onlineOnly: true },
+  { path: '/renew-activation', label: '激活码续期', icon: RefreshCw, onlineOnly: true },
+  { path: '/about-public', label: '关于', icon: Info, onlineOnly: false },
 ]
 
 interface AuthNavbarProps {
@@ -100,9 +95,7 @@ export function AuthNavbar({ systemName }: AuthNavbarProps) {
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const resolvedSystemName = usePublicSystemName(systemName)
-  const online = isOnlineEnv()
-  /** 根据当前环境过滤菜单项：仅线上正式环境(xy.zhinianboke.com)显示受域名限制的菜单 */
-  const filteredItems = NAV_ITEMS.filter(item => !item.hideOnLocal || online)
+  const filteredItems = NAV_ITEMS.filter(item => !item.onlineOnly || isOnlineEnv())
 
   // 主题切换（统一在 Navbar 内管理，避免各页面重复实现和遮挡手机端汉堡菜单）
   const [isDark, setIsDark] = useState(false)
