@@ -182,6 +182,8 @@ docker compose up -d --build
 
 `docker-compose.yml` 的 `frontend`、`backend-web`、`websocket`、`scheduler` 均使用本仓库的 Dockerfile 和当前目录源码；MySQL 与 Redis 默认使用官方基础镜像。首次部署前请在 `.env` 中设置自己的数据库密码等配置。已有数据保存在 Compose 命名卷中。
 
+如果 Docker Hub 在当前网络不可用，可以在 `.env` 中设置 `PYTHON_BASE_IMAGE`、`NODE_BASE_IMAGE`、`NGINX_BASE_IMAGE`、`MYSQL_IMAGE`、`REDIS_IMAGE`，选择可访问的官方镜像镜像源。仅本机访问时，也可以将端口写成 `FRONTEND_PORT=127.0.0.1:9000`（其余服务端口同理）。首次启动会创建 `admin/admin123`，请在开放外网访问前更换管理员密码。
+
 后续更新源码并重新构建应用镜像：
 
 ```bash

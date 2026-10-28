@@ -65,6 +65,8 @@ services:
     build:
       context: .
       dockerfile: backend-web/Dockerfile
+      args:
+        PYTHON_BASE_IMAGE: ${PYTHON_BASE_IMAGE:-python:3.11-slim}
     container_name: xianyu-backend-web
     restart: unless-stopped
     environment:
@@ -145,6 +147,8 @@ services:
     build:
       context: .
       dockerfile: websocket/Dockerfile
+      args:
+        PYTHON_BASE_IMAGE: ${PYTHON_BASE_IMAGE:-python:3.11-slim}
     container_name: xianyu-websocket
     restart: unless-stopped
     environment:
@@ -220,6 +224,8 @@ services:
     build:
       context: .
       dockerfile: scheduler/Dockerfile
+      args:
+        PYTHON_BASE_IMAGE: ${PYTHON_BASE_IMAGE:-python:3.11-slim}
     container_name: xianyu-scheduler
     restart: unless-stopped
     environment:
@@ -293,6 +299,9 @@ services:
     build:
       context: .
       dockerfile: docker/frontend/Dockerfile
+      args:
+        NODE_BASE_IMAGE: ${NODE_BASE_IMAGE:-node:18-alpine}
+        NGINX_BASE_IMAGE: ${NGINX_BASE_IMAGE:-nginx:alpine}
     container_name: xianyu-frontend
     restart: unless-stopped
     environment:

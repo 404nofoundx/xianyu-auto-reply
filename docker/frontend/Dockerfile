@@ -3,8 +3,9 @@
 # 前端编译后为混淆压缩的JS，天然不含可读源码
 
 # ====== 第一阶段：构建 ======
-# 基础镜像走 docker.io 官方名（由 buildx 的 buildkitd 镜像加速配置拉取，见流水线 BUILDKIT 配置）
-FROM node:18-alpine AS builder
+ARG NODE_BASE_IMAGE=node:18-alpine
+ARG NGINX_BASE_IMAGE=nginx:alpine
+FROM ${NODE_BASE_IMAGE} AS builder
 
 # 锁文件含镜像站地址，构建时统一从 npm 官方仓库下载依赖。
 RUN npm config set registry https://registry.npmjs.org && \
@@ -25,8 +26,7 @@ COPY frontend/ .
 RUN npm run build
 
 # ====== 第二阶段：运行 ======
-# 基础镜像走 docker.io 官方名（由 buildx 的 buildkitd 镜像加速配置拉取，见流水线 BUILDKIT 配置）
-FROM nginx:alpine
+FROM ${NGINX_BASE_IMAGE}
 
 # 配置国内镜像源
 RUN sed -i 's|dl-cdn.alpinelinux.org|mirrors.aliyun.com|g' /etc/apk/repositories
@@ -45,6 +45,6 @@ ENV TZ=Asia/Shanghai
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:80/frontend-health || exit 1
 
 CMD ["nginx", "-g", "daemon off;"]
